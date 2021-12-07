@@ -1,0 +1,10 @@
+@media all and (min-width: 480px) {
+    .Dashboard {
+      padding: 60px 0;
+    }
+  
+    .Dashboard form {
+      margin: 0 auto;
+      max-width: 320px;
+    }
+  }
