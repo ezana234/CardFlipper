@@ -158,7 +158,7 @@ app.post("/sendChat", Utils.authenticateJWT, validateMessage, (req, res) => {
             // Emit message
             const chatNsp = io.of("/chat/" + roomID)
             chatNsp.emit("text", roomService.messageService(userObj.username, message))
-            return res.json({ message: "success" })
+            return res.json({ message: roomService.messageService(userObj.username, message) })
 
         }).catch((error) => {
             console.log(error)
