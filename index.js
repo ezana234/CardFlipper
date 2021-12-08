@@ -119,7 +119,7 @@ app.post("/initialize", Utils.authenticateJWT, validateRoom, async (req, res) =>
                     if (io.engine.clientsCount > CONSTANTS.MAX_PLAYERS) {
                         socket.emit('err', { message: 'reach the limit of connections' })
                         socket.disconnect()
-                        console.log('Disconnected...')
+                        console.log('Chat Disconnected...')
                         return
                     }
                 });
