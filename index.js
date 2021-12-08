@@ -189,7 +189,7 @@ app.put("/start/:roomID", Utils.authenticateJWT, validateRoom, (req, res) => {
                 return res.status(400).json(({ errors: [{ error: "Failed to Start Game" }] }))
             }
             const room = await roomService.getRoom(roomID, userObj.username);
-            setTimeout(() =>{
+            setTimeout(() => {
                 gameNSP.emit("start", room)
             }, 1000);
             return res.json({ message: "success" })
@@ -210,7 +210,7 @@ app.get("/room/:roomID", Utils.authenticateJWT, validateRoom, (req, res) => {
             const roomID = req.params.roomID;
             try {
                 const room = await roomService.getRoom(roomID, userObj.username);
-                return res.json({ cards: room.cards, users: room.users  })
+                return res.json({ cards: room.cards, users: room.users })
             } catch (error) {
                 console.log("Error in game: ", error)
                 return res.status(500).json({ errors: [{ error: "Failed to Distribute Cards" }] })
@@ -236,15 +236,36 @@ app.put("/room/points", Utils.authenticateJWT, validatePoints, (req, res) => {
                 const gameNSP = io.of("/game/" + roomID);
                 const newRoom = await roomService.updateGameState(roomID, userObj.username, points);
                 gameNSP.emit("update", newRoom)
-                if(roomService.checkWin(newRoom)) {
+                // If the user won, emit that this user won
+                if (roomService.checkWin(newRoom)) {
                     gameNSP.emit("win", userObj.username)
                     await roomService.deleteRoom(roomID)
                 }
-                return res.json({match: newRoom.match})
+                // Return whether the cards matched or not
+                return res.json({ match: newRoom.match })
             } catch (error) {
                 console.log("Error in room: ", error)
                 return res.status(500).json({ errors: [{ error: "Failed to Distribute Cards" }] })
             }
+        }).catch((error) => {
+            console.log("In Error index: ", error)
+            return res.status(403).json({ errors: [{ error: "Failed to Decode Token." }] })
+        });
+    }
+})
+
+//Route to restart game
+app.put("/restart", Utils.authenticateJWT, validateRoom, (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    } else {
+        Utils.decodeToken(req).then(async (userObj) => {
+            const roomID = req.body.roomID;
+            const gameNSP = io.of("/game/" + roomID);
+            const room = await roomService.restart(roomID, userObj.username)
+            gameNSP.emit("restart",{room: room, user: userObj.username});
+            return res.json({message:"success"})
         }).catch((error) => {
             console.log("In Error index: ", error)
             return res.status(403).json({ errors: [{ error: "Failed to Decode Token." }] })

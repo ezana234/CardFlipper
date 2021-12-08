@@ -197,7 +197,7 @@ function updateGameState(roomID, userID, points) {
                 const newRoom = await roomDAO.UpdateRoom(filterTurn, updateTurn)
                 console.log("4")
                 return resolve({users: newRoom.users, match: false})
-            // If the values do match, disable card and change turn
+            // If the values do match, disable card
             } else {
                 //check if values are false
                 filterTurn = {
@@ -268,6 +268,49 @@ function deleteRoom(roomID) {
     })
 }
 
+// This function updates the room with new cards
+function restart(roomID, userID) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            //Chnage turns
+            let filterTurn = {
+                roomID: roomID,
+                "users.turn": false
+            }
+            let updateTurn = {
+                $set: {
+                    "users.$.turn": true
+                },
+            }
+            await roomDAO.UpdateRoom(filterTurn, updateTurn)
+            filterTurn = {
+                roomID: roomID,
+                "users.userID": userID
+            }
+            updateTurn = {
+                $set: {
+                    "users.$.turn": false
+                },
+            }
+            await roomDAO.UpdateRoom(filterTurn, updateTurn)
+            // Update cards
+            const shuffledCards = Array.from(Utils.shuffle(Utils.cards()))
+            const filter = {
+                roomID: roomID
+            }
+
+            const update = {
+                $set: {
+                    cards: shuffledCards
+                }
+            }
+            return resolve(await roomDAO.UpdateRoom(filter, update))
+        } catch (error) {
+            return reject(error);
+        }
+    })
+}
+
 module.exports = {
     createRoom,
     joinRoom,
@@ -277,5 +320,6 @@ module.exports = {
     getRoom,
     updateGameState,
     checkWin,
-    deleteRoom
+    deleteRoom,
+    restart
 }
