@@ -27,6 +27,7 @@ mongoose.connect(url, { useNewUrlParser: true });
 
 // This route creates and logs in a user by returning a token
 app.post("/login", validateUsername, (req, res) => {
+    res.header("Access-Control-Allow-Headers", "x-requested-with, x-requested-by");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
