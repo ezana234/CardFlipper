@@ -1,5 +1,5 @@
 const shortid = require("shortid")
-shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@');
+shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$!');
 const roomDAO = require("../DAO/RoomDAO")
 const CONSTANTS = require("../Utils/Constants");
 const Utils = require("../Utils/Utils")
