@@ -21,7 +21,7 @@ const { validateUsername, validateRoom, validateMessage, validatePoints } = requ
 const userService = require('./Services/userService')
 const roomService = require('./Services/RoomService')
 const gameService = require("./Services/GameService");
-const url = "mongodb://127.0.0.1:27017/CardFlipper";
+const url = "mongodb+srv://ezana-user:MasterLoser300@cluster0.n608n.mongodb.net/Cluster0?retryWrites=true&w=majority";
 const Utils = require("./Utils/Utils")
 const CONSTANTS = require("./Utils/Constants");
 
